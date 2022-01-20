@@ -6,16 +6,28 @@
     <div class="content">
       <div v-if="numbersExist">
         <div class="top-row">
-          <digit :number="number" v-for="number in mainNumbers" :key="number" :color="'purple'"/>
+          <digit
+            :number="number"
+            v-for="number in mainNumbers"
+            :key="number"
+            :color="'purple'"
+          />
         </div>
         <div class="bottom-row">
-          <digit :number="number" v-for="number in secondaryNumbers" :key="number" :color="'yellow'"/>
+          <digit
+            :number="number"
+            v-for="number in secondaryNumbers"
+            :key="number"
+            :color="'yellow'"
+          />
         </div>
       </div>
       <div v-else class="instructions">
-        <span style="color: white; font-size: 1.5rem; letter-spacing: 3px;">Press button to generate numbers!</span>
+        <span style="color: white; font-size: 1.5rem; letter-spacing: 3px"
+          >Press button to generate numbers!</span
+        >
         <div style="height: 100px">
-          <img class="arrows" src="../assets/arrows.png"/>
+          <img class="arrows" src="../assets/arrows.png" />
         </div>
       </div>
     </div>
@@ -25,56 +37,89 @@
 </template>
 
 <script>
-import Digit from './Digit';
+import Digit from "./Digit";
 
 export default {
-  name: 'Container',
+  name: "Container",
   components: {
-    Digit
+    Digit,
   },
   props: {
-    msg: String
+    msg: String,
   },
-  data: function() {
+  data: function () {
     return {
       mainNumbers: [],
-      secondaryNumbers: []
-    }
+      secondaryNumbers: [],
+    };
   },
   methods: {
-    generateNumbers(){
+    async generateNumbers() {
       this.mainNumbers = [];
       this.secondaryNumbers = [];
-      while(this.mainNumbers.length < 5){
-        this.generateNewNumber(this.mainNumbers, 50);
+
+      do{
+        await this.generate5();
+        if(!this.checkTwoThreeConstraint(this.mainNumbers) || !this.checkOddEvenConstraint(this.mainNumbers)) this.mainNumbers = [];
       }
-      while(this.secondaryNumbers.length < 2){
+      while(this.mainNumbers.length < 5);
+      
+      while (this.secondaryNumbers.length < 2) {
         this.generateNewNumber(this.secondaryNumbers, 10);
       }
       this.mainNumbers.sort((a, b) => a - b);
       this.secondaryNumbers.sort((a, b) => a - b);
     },
 
-    generateNewNumber(arr, limit){
+    generateNewNumber(arr, limit) {
       let num = Math.floor(Math.random() * limit) + 1;
-      if(!arr.includes(num)){
+      if (!arr.includes(num)) {
         arr.push(num);
       }
-    }
+    },
+
+    async generate5(){
+      while (this.mainNumbers.length < 5) {
+        this.generateNewNumber(this.mainNumbers, 50);
+      }
+    },
+
+    checkTwoThreeConstraint(arr) {
+      let lowers = 0;
+      let highers = 0;
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] < 25) lowers++;
+        else highers++;
+      }
+      if ((lowers === 3 && highers === 2) || (lowers === 2 && highers === 3))
+        return true;
+      return false;
+    },
+    checkOddEvenConstraint(arr) {
+      let odds = 0;
+      let evens = 0;
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] % 2 != 0) odds++;
+        else evens++;
+      }
+      if ((odds === 3 && evens === 2) || (odds === 2 && evens === 3))
+        return true;
+      return false;
+    },
   },
   computed: {
-    numbersExist(){
+    numbersExist() {
       return this.mainNumbers.length > 0 ? true : false;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
-.title{
-  animation: appearFromTop 500ms cubic-bezier(0.480, 0.035, 0.000, 0.935);
+.title {
+  animation: appearFromTop 500ms cubic-bezier(0.48, 0.035, 0, 0.935);
 }
-.logo{
+.logo {
   height: 250px;
   transform-origin: center;
   opacity: 0.8;
@@ -89,48 +134,46 @@ export default {
   display: flex;
   flex-direction: column;
 
-  animation: appearFromTop 500ms cubic-bezier(0.480, 0.035, 0.000, 0.935);
+  animation: appearFromTop 500ms cubic-bezier(0.48, 0.035, 0, 0.935);
 }
 
-.content{
+.content {
   height: auto;
   max-width: 500px;
   width: 90%;
   margin: auto;
 }
 
-.top-row{
+.top-row {
   height: 3.5rem;
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-areas:
-    ". . . . .";
+  grid-template-areas: ". . . . .";
   justify-content: space-evenly;
   grid-auto-flow: column;
   align-items: center;
   background-color: #f8ec7d;
   transform-origin: left;
-  animation: slideInRight 400ms cubic-bezier(0.480, 0.035, 0.000, 0.935);
+  animation: slideInRight 400ms cubic-bezier(0.48, 0.035, 0, 0.935);
 }
 
-.bottom-row{
+.bottom-row {
   height: 3.5rem;
   max-width: 300px;
   margin: 30px auto 0px auto;
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-areas:
-    ". .";
+  grid-template-areas: ". .";
   justify-content: space-evenly;
   grid-auto-flow: column;
   align-items: center;
   background-color: #63316d;
   transform-origin: right;
-  animation: slideInLeft 400ms cubic-bezier(0.480, 0.035, 0.000, 0.935);
+  animation: slideInLeft 400ms cubic-bezier(0.48, 0.035, 0, 0.935);
 }
 
-.instructions{
-  animation: levitate 2s infinite cubic-bezier(.42,0,.58,1) 500ms;
+.instructions {
+  animation: levitate 2s infinite cubic-bezier(0.42, 0, 0.58, 1) 500ms;
 }
 
 .arrows {
@@ -138,7 +181,7 @@ export default {
   margin-top: 10%;
 }
 
-.myButton{
+.myButton {
   width: 150px;
   height: 150px;
   margin: auto;
@@ -147,10 +190,11 @@ export default {
   border-radius: 100px;
   font-weight: 400;
   font-size: 1.1rem;
-  background-image: url('../assets/random.png');
+  background-image: url("../assets/random.png");
   background-position: center;
   background-size: cover;
-  animation: appearFromBottom 2s cubic-bezier(0.480, 0.035, 0.000, 0.935), levitate 2s infinite cubic-bezier(.42,0,.58,1) 2s;
+  animation: appearFromBottom 2s cubic-bezier(0.48, 0.035, 0, 0.935),
+    levitate 2s infinite cubic-bezier(0.42, 0, 0.58, 1) 2s;
 }
 
 .myButton:active {
@@ -158,18 +202,20 @@ export default {
   transform: scale(0.99);
 }
 
-.footer{
-  margin-top: auto; color: white; opacity: 0.7;
+.footer {
+  margin-top: auto;
+  color: white;
+  opacity: 0.7;
 }
 
-@keyframes levitate{
-  0%{
+@keyframes levitate {
+  0% {
     transform: translateY(0px);
   }
   50% {
     transform: translateY(-20px);
   }
-  100%{
+  100% {
     transform: translateY(0px);
   }
 }
@@ -197,7 +243,7 @@ export default {
     transform: translateY(-200px);
     opacity: 0;
   }
-  100%{
+  100% {
     opacity: 100;
     transform: translateY(0px);
   }
@@ -208,35 +254,35 @@ export default {
     opacity: 0;
     transform: translateY(125px);
   }
-  50%{
+  50% {
     opacity: 0.35;
   }
-  100%{
+  100% {
     opacity: 1;
-    transform: translateY(0px) rotateZ(360deg);;
+    transform: translateY(0px) rotateZ(360deg);
   }
 }
 
-  /* MOBILE */
-  @media only screen and (max-width: 720px) {
+/* MOBILE */
+@media only screen and (max-width: 720px) {
   .container {
     width: 90vw;
     min-width: 300px;
   }
 
-  .myButton{
+  .myButton {
     width: 100px;
     height: 100px;
     margin-top: 70px;
   }
 
-  .logo{
+  .logo {
     height: 150px;
     margin-bottom: 50px;
   }
 
   .footer {
-    font-size: .7rem;
+    font-size: 0.7rem;
   }
 }
 </style>
