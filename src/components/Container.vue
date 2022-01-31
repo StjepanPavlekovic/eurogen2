@@ -65,7 +65,7 @@ export default {
       while(this.mainNumbers.length < 5);
       
       while (this.secondaryNumbers.length < 2) {
-        this.generateNewNumber(this.secondaryNumbers, 10);
+        this.generateNewNumber(this.secondaryNumbers, 12);
       }
       this.mainNumbers.sort((a, b) => a - b);
       this.secondaryNumbers.sort((a, b) => a - b);
